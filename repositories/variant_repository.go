@@ -7,7 +7,7 @@ import (
 
 type VariantRepository interface {
 	CreateVariant(*models.Variant) (*models.Variant, error)
-	GetAllVariant() (*[]models.Variant, error)
+	GetAllVariant(offset int, limit int, search string) (*[]models.Variant, error)
 	GetVariantById(string) (*models.Variant, error)
 	UpdateVariant(*models.Variant) (*models.Variant, error)
 	DeleteVariant(string) (*models.Variant, error)
@@ -31,13 +31,20 @@ func (repository *variantRepositoryImpl) CreateVariant(VariantReq *models.Varian
 	return VariantReq, nil
 }
 
-func (repository *variantRepositoryImpl) GetAllVariant() (*[]models.Variant, error) {
+func (repository *variantRepositoryImpl) GetAllVariant(offset int, limit int, search string) (*[]models.Variant, error) {
 	db := database.GetDB()
 	var results = []models.Variant{}
 
-	res := db.Find(&results)
-	if res.Error != nil {
-		return nil, res.Error
+	if search != "" {
+		res := db.Offset(offset).Limit(limit).Where("name LIKE ? ", "%"+search+"%").Find(&results)
+		if res.Error != nil {
+			return nil, res.Error
+		}
+	} else {
+		res := db.Offset(offset).Limit(limit).Find(&results)
+		if res.Error != nil {
+			return nil, res.Error
+		}
 	}
 
 	return &results, nil

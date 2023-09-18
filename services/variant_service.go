@@ -4,6 +4,7 @@ import (
 	"basictrade-api/models"
 	"basictrade-api/repositories"
 	"basictrade-api/requests"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -11,7 +12,7 @@ import (
 
 type VariantService interface {
 	CreateVariant(*gin.Context) (*models.Variant, error)
-	GetAllVariant() (*[]models.Variant, error)
+	GetAllVariant(*gin.Context) (*[]models.Variant, error)
 	GetVariantById(string) (*models.Variant, error)
 	UpdateVariant(*gin.Context) (*models.Variant, error)
 	DeleteVariant(string) (*models.Variant, error)
@@ -58,8 +59,32 @@ func (service *variantServiceImpl) CreateVariant(ctx *gin.Context) (*models.Vari
 	return variant, err
 }
 
-func (service *variantServiceImpl) GetAllVariant() (*[]models.Variant, error) {
-	variants, err := service.VariantRepository.GetAllVariant()
+func (service *variantServiceImpl) GetAllVariant(ctx *gin.Context) (*[]models.Variant, error) {
+
+	var offset, limit int
+	var err error
+
+	if ctx.Query("offset") != "" {
+		offset, err = strconv.Atoi(ctx.Query("offset"))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		offset = 0
+	}
+
+	if ctx.Query("limit") != "" {
+		limit, err = strconv.Atoi(ctx.Query("limit"))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		limit = 50
+	}
+
+	search := ctx.Query("search")
+
+	variants, err := service.VariantRepository.GetAllVariant(offset, limit, search)
 
 	if err != nil {
 		return nil, err

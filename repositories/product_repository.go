@@ -7,7 +7,7 @@ import (
 
 type ProductRepository interface {
 	CreateProduct(*models.Product) (*models.Product, error)
-	GetAllProduct() (*[]models.Product, error)
+	GetAllProduct(offset int, limit int, search string) (*[]models.Product, error)
 	GetProductById(id string) (*models.Product, error)
 	UpdateProduct(*models.Product) (*models.Product, error)
 	DeleteProduct(string) (*models.Product, error)
@@ -29,13 +29,20 @@ func (repository *productRepositoryImpl) CreateProduct(ProductReq *models.Produc
 	return ProductReq, nil
 }
 
-func (repository *productRepositoryImpl) GetAllProduct() (*[]models.Product, error) {
+func (repository *productRepositoryImpl) GetAllProduct(offset int, limit int, search string) (*[]models.Product, error) {
 	db := database.GetDB()
 	var results = []models.Product{}
 
-	res := db.Preload("Variants").Find(&results)
-	if res.Error != nil {
-		return nil, res.Error
+	if search != "" {
+		res := db.Offset(offset).Limit(limit).Where("name LIKE ? ", "%"+search+"%").Preload("Variants").Find(&results)
+		if res.Error != nil {
+			return nil, res.Error
+		}
+	} else {
+		res := db.Offset(offset).Limit(limit).Preload("Variants").Find(&results)
+		if res.Error != nil {
+			return nil, res.Error
+		}
 	}
 
 	return &results, nil

@@ -44,7 +44,7 @@ func (controller *variantControllerImpl) GetAllVariant(ctx *gin.Context) {
 
 	var results = &[]models.Variant{}
 
-	results, err := controller.VariantService.GetAllVariant()
+	results, err := controller.VariantService.GetAllVariant(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Variant record not found!"})
 		return

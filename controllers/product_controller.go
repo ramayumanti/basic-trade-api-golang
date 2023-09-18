@@ -44,7 +44,7 @@ func (controller *productControllerImpl) GetAllProduct(ctx *gin.Context) {
 
 	var results = &[]models.Product{}
 
-	results, err := controller.ProductService.GetAllProduct()
+	results, err := controller.ProductService.GetAllProduct(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Product record not found!"})
 		return

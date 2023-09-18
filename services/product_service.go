@@ -5,6 +5,7 @@ import (
 	"basictrade-api/models"
 	"basictrade-api/repositories"
 	"basictrade-api/requests"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	jwt5 "github.com/golang-jwt/jwt/v5"
@@ -13,7 +14,7 @@ import (
 
 type ProductService interface {
 	CreateProduct(*gin.Context) (*models.Product, error)
-	GetAllProduct() (*[]models.Product, error)
+	GetAllProduct(*gin.Context) (*[]models.Product, error)
 	GetProductById(id string) (*models.Product, error)
 	UpdateProduct(*gin.Context) (*models.Product, error)
 	DeleteProduct(string) (*models.Product, error)
@@ -65,9 +66,32 @@ func (service *productServiceImpl) CreateProduct(ctx *gin.Context) (*models.Prod
 	return productRes, nil
 }
 
-func (service *productServiceImpl) GetAllProduct() (*[]models.Product, error) {
-	products, err := service.ProductRepository.GetAllProduct()
+func (service *productServiceImpl) GetAllProduct(ctx *gin.Context) (*[]models.Product, error) {
 
+	var offset, limit int
+	var err error
+
+	if ctx.Query("offset") != "" {
+		offset, err = strconv.Atoi(ctx.Query("offset"))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		offset = 0
+	}
+
+	if ctx.Query("limit") != "" {
+		limit, err = strconv.Atoi(ctx.Query("limit"))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		limit = 50
+	}
+
+	search := ctx.Query("search")
+
+	products, err := service.ProductRepository.GetAllProduct(offset, limit, search)
 	if err != nil {
 		return nil, err
 	}
