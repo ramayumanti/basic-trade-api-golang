@@ -111,7 +111,7 @@ func (service *variantServiceImpl) UpdateVariant(ctx *gin.Context) (*models.Vari
 		return nil, err
 	}
 
-	existingVariant, err := service.GetVariantById(ctx.PostForm("variantUUID"))
+	existingVariant, err := service.GetVariantById(ctx.Param("variantUUID"))
 	if err != nil {
 		return nil, err
 	}

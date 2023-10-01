@@ -36,6 +36,9 @@ func (service *productServiceImpl) CreateProduct(ctx *gin.Context) (*models.Prod
 
 	adminData := ctx.MustGet("adminData").(jwt5.MapClaims)
 	existingAdmin, err := service.AdminRepository.SearchAdminByEmail(adminData["email"].(string))
+	if err != nil {
+		return nil, err
+	}
 
 	var productReq requests.ProductRequest
 	if err := ctx.ShouldBind(&productReq); err != nil {
@@ -117,7 +120,7 @@ func (service *productServiceImpl) UpdateProduct(ctx *gin.Context) (*models.Prod
 		return nil, err
 	}
 
-	existingProduct, err := service.GetProductById(ctx.PostForm("productUUID"))
+	existingProduct, err := service.GetProductById(ctx.Param("productUUID"))
 	if err != nil {
 		return nil, err
 	}

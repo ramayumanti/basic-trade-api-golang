@@ -36,7 +36,7 @@ func (repository *variantRepositoryImpl) GetAllVariant(offset int, limit int, se
 	var results = []models.Variant{}
 
 	if search != "" {
-		res := db.Offset(offset).Limit(limit).Where("name LIKE ? ", "%"+search+"%").Find(&results)
+		res := db.Offset(offset).Limit(limit).Where("variant_name LIKE ? ", "%"+search+"%").Find(&results)
 		if res.Error != nil {
 			return nil, res.Error
 		}
@@ -54,7 +54,7 @@ func (repository *variantRepositoryImpl) GetVariantById(id string) (*models.Vari
 	db := database.GetDB()
 	var results = models.Variant{}
 
-	res := db.Where(models.Variant{UUID: id}).First(&results)
+	res := db.Where(models.Variant{UUID: id}).Take(&results)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -90,7 +90,7 @@ func (repository *variantRepositoryImpl) DeleteVariant(id string) (*models.Varia
 	db := database.GetDB()
 	var variant models.Variant
 
-	res := db.Where(models.Variant{UUID: id}).First(&variant)
+	res := db.Where(models.Variant{UUID: id}).Take(&variant)
 	if res.Error != nil {
 		return nil, res.Error
 	}
@@ -99,7 +99,7 @@ func (repository *variantRepositoryImpl) DeleteVariant(id string) (*models.Varia
 
 	if err := tx.Delete(&variant).Error; err != nil {
 		tx.Rollback()
-		return nil, res.Error
+		return nil, err
 	}
 
 	tx.Commit()
