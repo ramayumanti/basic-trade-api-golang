@@ -13,30 +13,42 @@ When adding a product, a user needs to provide the name of the product and the p
 
 Authorization:
   - Registration
+    
     POST /auth/register
   - Login
+    
     POST /auth/login
 
 Product:
   - Add new product
+    
     POST /products/
   - Read all existing products
+    
     GET /products/
   - Read an existing product by UUID
+    
     GET /products/:productUUID
   - Update existing product
+    
     PUT /products/:productUUID
   - Delete existing product
+    
     DELETE /products/:productUUID
 
 Variant:
   - Add new variant
+    
     POST /products/variants/
   - Read all existing variants
+    
     GET /products/variants/
   - Read an existing variant by UUID
+    
     GET /products/variants/:variantUUID
   - Update existing variant
+    
     PUT /products/variants/:variantUUID
   - Delete existing variant
+    
     DELETE /products/variants/:variantUUID
